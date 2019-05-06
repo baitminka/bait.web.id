@@ -462,12 +462,8 @@ footer p:first-child {
 }
 
 .meta-item:before {
-    content:"•";color:rgba(191,25,25,.7);
-    display:inline-block
-}
-
-.meta-item:first-of-type:before {
-    content:none
+    content: "•";
+    display: inline-block
 }
 
 @media(max-width:30em) {
