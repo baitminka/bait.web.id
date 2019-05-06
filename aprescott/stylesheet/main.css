@@ -261,18 +261,6 @@ h6 {
     font-weight: normal
 }
 
-body> header hgroup h1 {
-    position: absolute !important;
-    clip: rect(0 0 0 0);
-    clip: rect(0, 0, 0, 0);
-    width: 1px;
-    height: 1px;
-    margin: -1px 0 0;
-    padding: 0;
-    border: 0;
-    overflow: hidden
-}
-
 h1 {
     padding: .5em 0;
     font-size: 1.5em
