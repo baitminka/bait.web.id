@@ -249,7 +249,7 @@ body>header {
     font-size: 2em
 }
 
-.post header time {
+.post header p {
     margin: 0;
     color: #aaa;
     display: block
