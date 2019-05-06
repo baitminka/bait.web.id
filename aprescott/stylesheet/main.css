@@ -461,6 +461,15 @@ footer p:first-child {
     padding: .25em 0
 }
 
+.meta-item:before {
+    content:"•";color:rgba(191,25,25,.7);
+    display:inline-block
+}
+
+.meta-item:first-of-type:before {
+    content:none
+}
+
 @media(max-width:30em) {
     body>header {
         display: block;
