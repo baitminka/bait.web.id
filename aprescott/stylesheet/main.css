@@ -261,7 +261,7 @@ h6 {
     font-weight: normal
 }
 
-body>header>hgroup>h1 {
+body> header hgroup h1 {
     position: absolute !important;
     clip: rect(0 0 0 0);
     clip: rect(0, 0, 0, 0);
