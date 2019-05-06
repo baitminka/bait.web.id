@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Styling specific characters with unicode-range · Adam Prescott</title>
+    <link type="application/atom+xml" href="/feed" rel="alternate" title="Atom feed">
+    <link rel="stylesheet" href="stylesheet/main.css" type="text/css">
+    <link rel="stylesheet" href="stylesheet/highlight.css" type="text/css">
+</head>
+
+<body>
+    <header>
+        <h1><a href="/">Adam Prescott</a></h1>
+    </header>
+
+    <article id="entry" class="post">
+        <header>
+            <h1>Styling specific characters with unicode-range</h1>
+            <time datetime="2013-03-02">March 2nd 2013</time>
+        </header>
+
+        <p>This completely passed me by, even though <a href="http://24ways.org/2011/creating-custom-font-stacks-with-unicode-range/">24 ways covered it</a>.</p>
+
+        <p>Tucked into <code class="highlighter-rouge">@font-face</code> is a <a href="http://www.w3.org/TR/css3-fonts/#unicode-range-desc"><code class="highlighter-rouge">unicode-range</code></a> property that lets you restrict the range of characters used by the specified font. So say you want ampersands with a flourish within your otherwise normal text, then — to steal from the 24 ways article — you can:</p>
+
+        <div class="language-css highlighter-rouge">
+            <pre class="highlight"><code><span class="k">@font-face</span> <span class="p">{</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="s2">'Ampersand'</span><span class="p">;</span>
+    <span class="nl">src</span><span class="p">:</span> <span class="n">local</span><span class="p">(</span><span class="s2">'Baskerville'</span><span class="p">),</span> <span class="n">local</span><span class="p">(</span><span class="s2">'Palatino'</span><span class="p">),</span> <span class="n">local</span><span class="p">(</span><span class="s2">'Book Antiqua'</span><span class="p">);</span>
+    <span class="py">unicode-range</span><span class="p">:</span> <span class="n">U</span><span class="err">+</span><span class="m">26</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+        </div>
+
+        <p>Now instead of relying on <code class="highlighter-rouge">&lt;span class="ampersand"&gt;&amp;&lt;/span&gt;</code> added with some JavaScript, you just use the Ampersand font in your <code class="highlighter-rouge">font-family</code> values:</p>
+
+        <div class="language-css highlighter-rouge">
+            <pre class="highlight"><code><span class="nt">p</span> <span class="p">{</span>
+    <span class="nl">font-family</span><span class="p">:</span> <span class="n">Ampersand</span><span class="p">,</span> <span class="n">Georgia</span><span class="p">,</span> <span class="s1">"Your Favourite Web Font"</span><span class="p">,</span> <span class="nb">serif</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+        </div>
+
+        <p>The Ampersand font is restricted to ampersand characters, so the browser will fall back to Georgia otherwise.</p>
+
+        <h2 id="web-fonts-and-a-lack-of-nested-font-face">Web fonts and a lack of nested <code class="highlighter-rouge">@font-face</code></h2>
+
+        <p>If you’re thinking of using Google Web Fonts for your ampersand-only font, you can avoid transferring the entire set of characters by <a href="https://developers.google.com/webfonts/docs/getting_started#Optimizing_Requests">restricting it</a> to just the &amp; (which is <code class="highlighter-rouge">%26</code> when encoded):</p>
+
+        <div class="highlighter-rouge">
+            <pre class="highlight"><code>http://fonts.googleapis.com/css?family=WhateverFont&amp;text=%26
+</code></pre>
+        </div>
+
+        <p>But… with or without this, it won’t work.</p>
+
+        <p>The CSS returned by Google doesn’t use <code class="highlighter-rouge">unicode-range</code> (understandably), and unfortunately it seems you can’t chain <code class="highlighter-rouge">@font-face</code> font names. Imagine you’ve used <code class="highlighter-rouge">WhateverFont</code> from Google with a <code class="highlighter-rouge">&lt;script&gt;</code> (although <code class="highlighter-rouge">@import</code> has the same problem):</p>
+
+        <div class="language-html highlighter-rouge">
+            <pre class="highlight"><code><span class="nt">&lt;link</span>
+ <span class="na">href=</span><span class="s">'http://fonts.googleapis.com/css?family=WhateverFont&amp;amp;text=%26'</span>
+ <span class="na">rel=</span><span class="s">'stylesheet'</span> <span class="na">type=</span><span class="s">'text/css'</span><span class="nt">&gt;</span>
+</code></pre>
+        </div>
+
+        <p>You can’t refer to a web font, in this case <code class="highlighter-rouge">WhateverFont</code>, from within <code class="highlighter-rouge">@font-face</code> rule:</p>
+
+        <div class="language-css highlighter-rouge">
+            <pre class="highlight"><code><span class="k">@font-face</span> <span class="p">{</span>
+  <span class="nl">font-family</span><span class="p">:</span> <span class="s1">"Ampersand"</span><span class="p">;</span>
+  <span class="nl">src</span><span class="p">:</span> <span class="n">local</span><span class="p">(</span><span class="s1">"WhateverFont"</span><span class="p">);</span> <span class="c">/* doesn't work! */</span>
+  <span class="py">unicode-range</span><span class="p">:</span> <span class="n">U</span><span class="err">+</span><span class="m">26</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+        </div>
+
+        <p><code class="highlighter-rouge">local()</code> uses the locally installed fonts, and <code class="highlighter-rouge">@font-face</code> (which is what the above <code class="highlighter-rouge">&lt;script&gt;</code> or an <code class="highlighter-rouge">@import</code> give you) doesn’t actually <em>install</em> the font, it just makes it available. There’s simply no way to refer to “Whatever Font” as a <code class="highlighter-rouge">src</code> value. You have to control all the CSS for this to work.</p>
+
+        <hr>
+
+        <p><strong>Update</strong>: I proposed making something like this valid on the www-style mailing list:</p>
+
+        <div class="language-css highlighter-rouge">
+            <pre class="highlight"><code><span class="c">/* Pull in the @font-face from Google */</span>
+<span class="k">@import</span><span class="p">(</span><span class="n">http</span><span class="p">://</span><span class="n">fonts</span><span class="p">.</span><span class="n">googleapis</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">css</span><span class="err">?</span><span class="n">family</span><span class="err">=</span><span class="n">WhateverFont</span><span class="p">)</span>
+
+<span class="c">/* Restrict "Whatever Font" to only ampersands. No src required: */</span>
+<span class="err">@</span><span class="n">font-face</span> <span class="p">{</span>
+  <span class="nl">font-family</span><span class="p">:</span> <span class="s1">"Whatever Font"</span><span class="p">;</span>
+  <span class="py">unicode-range</span><span class="p">:</span> <span class="n">U</span><span class="err">+</span><span class="m">26</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+        </div>
+
+        <p>Or, allow <code class="highlighter-rouge">@font-face</code> “chaining” with renames:</p>
+
+        <div class="language-ruby highlighter-rouge">
+            <pre class="highlight"><code><span class="vi">@font</span><span class="o">-</span><span class="n">face</span> <span class="p">{</span>
+  <span class="n">font</span><span class="o">-</span><span class="n">family</span><span class="o">-</span><span class="ss">src: </span><span class="s2">"Whatever Font"</span><span class="p">;</span>
+  <span class="n">font</span><span class="o">-</span><span class="ss">family: </span><span class="s2">"Ampersand"</span><span class="p">;</span>
+  <span class="n">unicode</span><span class="o">-</span><span class="ss">range: </span><span class="no">U</span><span class="o">+</span><span class="mi">26</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+        </div>
+
+        <p>But without this, you can get around the problem by grabbing Google Web Font’s <code class="highlighter-rouge">@font-face</code> served up by <code class="highlighter-rouge">http://fonts.googleapis.com/css?family=X</code> and hoping it doesn’t break on you. Then you control all the CSS and you can add your own <code class="highlighter-rouge">unicode-range</code> property.</p>
+
+        <aside>
+            <dl>
+                <dt>Previous post</dt>
+                <dd class="prev-post"><a href="/posts/rfc-access">Better access to RFCs</a></dd>
+                <dt>Next post</dt>
+                <dd class="next-post"><a href="/posts/spdy-colon-headers">SPDY’s colon headers</a></dd>
+            </dl>
+        </aside>
+        
+    </article>
+
+    <footer>
+        <p>&copy; 2010&ndash;2018 <a href="/about">Adam Prescott</a></p>
+    </footer>
+
+    <script async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+
+</html>
