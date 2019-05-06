@@ -76,7 +76,7 @@ body {
     width: 30em;
     margin: 0 auto;
     padding-bottom: 2em;
-    font-family: "et-book", Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+    font-family: Georgia, serif;
     color: #303030;
     max-width: 90%;
     overflow-x: hidden
