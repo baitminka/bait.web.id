@@ -485,7 +485,8 @@ footer p:first-child {
 
 .meta-item:before {
     content: "•";
-    display: inline-block
+    display: inline-block;
+    margin: 1px 2px 3px 4px;
 }
 
 @media(max-width:30em) {
