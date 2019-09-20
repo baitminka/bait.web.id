@@ -1,6 +1,0 @@
-Author: Nurbaiti Fitriyani
-Contact: nur@bait.web.id
-Location: ID
-Github: https://github.com/baitminka
-Standards: HTML5, CSS3, JavaScript, Accessibility
-Software: Sublime Text
